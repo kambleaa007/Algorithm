@@ -1,3 +1,4 @@
+// package Week_1.Code;
 /* *****************************************************************************
  *  Name: Ada Lovelace
  *  Date: Sept 20, 2023
@@ -18,7 +19,9 @@ public class Percolation {
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
-        if (n < 0) throw new IllegalArgumentException("Value of n is less than zero");
+        if (n <= 0)
+            throw new IllegalArgumentException("Value of n is less than zero");
+
         array = new boolean[n][n];
         int row, col;
         for (row = 0; row < n; row++) {
@@ -43,7 +46,7 @@ public class Percolation {
 
         if (!array[row][col]) {
             array[row][col] = true;
-            val = row * num + col;
+            val = oneD(row, col);
 
             if (row > 0 && array[row - 1][col]) wf.union(val, val - num);
             if (col > 0 && array[row][col - 1]) wf.union(val, val - 1);
@@ -58,13 +61,21 @@ public class Percolation {
         }
     }
 
+    private int oneD(int row, int col) {
+        return row * num + col;
+    }
+
+    private void helperMethod(int row, int col) {
+        if (row >= num || row < 0 || col >= num || col < 0)
+            throw new IllegalArgumentException("Enter a valid argument");
+    }
+
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         row = row - 1;
         col = col - 1;
 
-        if (row >= num || row < 0 || col >= num || col < 0)
-            throw new IllegalArgumentException("Enter a valid argument");
+        helperMethod(row, col);
 
         return array[row][col];
     }
@@ -74,10 +85,9 @@ public class Percolation {
         row = row - 1;
         col = col - 1;
 
-        if (row >= num || row < 0 || col >= num || col < 0)
-            throw new IllegalArgumentException("Enter a valid argument");
+        helperMethod(row, col);
 
-        return (wf.connected((row * num + col), start) && array[row][col]);
+        return ((wf.find(oneD(row, col)) == wf.find(start)) && array[row][col]);
     }
 
     // returns the number of open sites
@@ -87,10 +97,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return wf.connected(start, end);
+        return (wf.find(start) == wf.find(end));
     }
 
-    // public static void main(String[] args) {
-    //     System.out.println("Percolation");
-    // }
 }
